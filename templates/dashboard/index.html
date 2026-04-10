@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — WealthWise Finance Tracker{% endblock %}
+
+{% block nav_dashboard %}bg-primary-50 text-primary-700 font-semibold{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block header_actions %}
+<a href="/transactions/new" class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors">
+    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Add Transaction
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Month Selector -->
+<div class="mb-6">
+    <form method="GET" action="/dashboard" class="flex items-center space-x-3">
+        <label for="month" class="text-sm font-medium text-gray-700">Period:</label>
+        <input type="month" id="month" name="month" value="{{ selected_month | default('') }}" data-auto-submit class="block rounded-lg border-gray-300 shadow-sm text-sm focus:border-primary-500 focus:ring-primary-500 px-3 py-2 border">
+        <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors">
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            Filter
+        </button>
+    </form>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Total Income -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Total Income</p>
+                <p class="mt-1 text-2xl font-bold text-green-600">${{ "%.2f"|format(total_income | default(0)) }}</p>
+            </div>
+            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                </svg>
+            </div>
+        </div>
+        {% if income_change is defined and income_change is not none %}
+        <div class="mt-3 flex items-center text-xs">
+            {% if income_change >= 0 %}
+            <span class="text-green-600 font-medium">+{{ "%.1f"|format(income_change) }}%</span>
+            {% else %}
+            <span class="text-red-600 font-medium">{{ "%.1f"|format(income_change) }}%</span>
+            {% endif %}
+            <span class="ml-1 text-gray-500">vs last month</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Total Expenses -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Total Expenses</p>
+                <p class="mt-1 text-2xl font-bold text-red-600">${{ "%.2f"|format(total_expenses | default(0)) }}</p>
+            </div>
+            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+                </svg>
+            </div>
+        </div>
+        {% if expense_change is defined and expense_change is not none %}
+        <div class="mt-3 flex items-center text-xs">
+            {% if expense_change <= 0 %}
+            <span class="text-green-600 font-medium">{{ "%.1f"|format(expense_change) }}%</span>
+            {% else %}
+            <span class="text-red-600 font-medium">+{{ "%.1f"|format(expense_change) }}%</span>
+            {% endif %}
+            <span class="ml-1 text-gray-500">vs last month</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Net Savings -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Net Savings</p>
+                {% set net_savings = (total_income | default(0)) - (total_expenses | default(0)) %}
+                <p class="mt-1 text-2xl font-bold {% if net_savings >= 0 %}text-primary-600{% else %}text-red-600{% endif %}">
+                    {% if net_savings < 0 %}-{% endif %}${{ "%.2f"|format(net_savings | abs) }}
+                </p>
+            </div>
+            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+        <div class="mt-3 flex items-center text-xs">
+            {% if total_income | default(0) > 0 %}
+            <span class="text-gray-600 font-medium">{{ "%.0f"|format(((total_income | default(0)) - (total_expenses | default(0))) / (total_income | default(1)) * 100) }}% savings rate</span>
+            {% else %}
+            <span class="text-gray-500">No income recorded</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Budget Alerts -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Budget Alerts</p>
+                <p class="mt-1 text-2xl font-bold {% if (budget_alerts | default([])) | length > 0 %}text-yellow-600{% else %}text-green-600{% endif %}">
+                    {{ (budget_alerts | default([])) | length }}
+                </p>
+            </div>
+            <div class="flex-shrink-0 w-12 h-12 rounded-full {% if (budget_alerts | default([])) | length > 0 %}bg-yellow-100{% else %}bg-green-100{% endif %} flex items-center justify-center">
+                {% if (budget_alerts | default([])) | length > 0 %}
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                {% else %}
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mt-3 text-xs">
+            {% if (budget_alerts | default([])) | length > 0 %}
+            <a href="/budgets" class="text-yellow-600 hover:text-yellow-700 font-medium">View alerts →</a>
+            {% else %}
+            <span class="text-green-600 font-medium">All budgets on track</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Budget Alerts Detail -->
+{% if (budget_alerts | default([])) | length > 0 %}
+<div class="mb-8 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+    <div class="flex items-center mb-3">
+        <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <h3 class="text-sm font-semibold text-yellow-800">Budget Alerts</h3>
+    </div>
+    <ul class="space-y-2">
+        {% for alert in budget_alerts %}
+        <li class="flex items-center justify-between text-sm">
+            <span class="text-yellow-800">
+                <span class="font-medium">{{ alert.category }}</span> —
+                {% if alert.percentage >= 100 %}
+                <span class="text-red-700 font-semibold">Over budget by ${{ "%.2f"|format(alert.spent - alert.amount) }}</span>
+                {% else %}
+                <span>{{ "%.0f"|format(alert.percentage) }}% used (${{ "%.2f"|format(alert.spent) }} of ${{ "%.2f"|format(alert.amount) }})</span>
+                {% endif %}
+            </span>
+            <a href="/budgets" class="text-yellow-700 hover:text-yellow-900 underline text-xs">Manage</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Category Breakdown -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h2 class="text-base font-semibold text-gray-900">Spending by Category</h2>
+            <a href="/reports" class="text-xs text-primary-600 hover:text-primary-700 font-medium">View Report →</a>
+        </div>
+        <div class="p-5">
+            {% if (category_breakdown | default([])) | length > 0 %}
+            <div class="space-y-4">
+                {% for cat in category_breakdown %}
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center space-x-2">
+                            {% if cat.color is defined and cat.color %}
+                            <span class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: {{ cat.color }};"></span>
+                            {% else %}
+                            <span class="w-3 h-3 rounded-full flex-shrink-0 bg-gray-400"></span>
+                            {% endif %}
+                            <span class="text-sm font-medium text-gray-700">{{ cat.name }}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <span class="font-semibold">${{ "%.2f"|format(cat.amount) }}</span>
+                            <span class="text-gray-400 ml-1">({{ "%.1f"|format(cat.percentage) }}%)</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="h-2 rounded-full transition-all duration-500 {% if cat.percentage > 80 %}bg-red-500{% elif cat.percentage > 50 %}bg-yellow-500{% else %}bg-primary-500{% endif %}" style="width: {{ cat.percentage if cat.percentage <= 100 else 100 }}%;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Total -->
+            <div class="mt-5 pt-4 border-t border-gray-200 flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-900">Total Expenses</span>
+                <span class="text-sm font-bold text-gray-900">${{ "%.2f"|format(total_expenses | default(0)) }}</span>
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <svg class="mx-auto w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <p class="mt-2 text-sm text-gray-500">No spending data for this period</p>
+                <a href="/transactions/new" class="mt-3 inline-flex items-center text-sm text-primary-600 hover:text-primary-700 font-medium">
+                    Add your first transaction →
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h2 class="text-base font-semibold text-gray-900">Recent Transactions</h2>
+            <a href="/transactions" class="text-xs text-primary-600 hover:text-primary-700 font-medium">View All →</a>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% if (recent_transactions | default([])) | length > 0 %}
+            {% for txn in recent_transactions %}
+            <div class="px-5 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <div class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center {% if txn.type == 'income' %}bg-green-100{% elif txn.type == 'transfer' %}bg-blue-100{% else %}bg-red-100{% endif %}">
+                        {% if txn.type == 'income' %}
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                        </svg>
+                        {% elif txn.type == 'transfer' %}
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
+                        {% else %}
+                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+                        </svg>
+                        {% endif %}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">{{ txn.description or txn.category }}</p>
+                        <p class="text-xs text-gray-500">
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">{{ txn.category }}</span>
+                            <span class="ml-1">{{ txn.transaction_date }}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 ml-3 text-right">
+                    <p class="text-sm font-semibold {% if txn.type == 'income' %}text-green-600{% elif txn.type == 'transfer' %}text-blue-600{% else %}text-red-600{% endif %}">
+                        {% if txn.type == 'income' %}+{% elif txn.type == 'expense' %}-{% endif %}${{ "%.2f"|format(txn.amount) }}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="text-center py-10 px-5">
+                <svg class="mx-auto w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                </svg>
+                <p class="mt-2 text-sm text-gray-500">No transactions yet</p>
+                <a href="/transactions/new" class="mt-3 inline-flex items-center text-sm text-primary-600 hover:text-primary-700 font-medium">
+                    Add your first transaction →
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% if (recent_transactions | default([])) | length > 0 %}
+        <div class="px-5 py-3 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+            <a href="/transactions" class="block text-center text-sm text-primary-600 hover:text-primary-700 font-medium">
+                View all transactions →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <a href="/transactions/new" class="flex items-center p-4 bg-white rounded-xl shadow-sm border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all group">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+        </div>
+        <div class="ml-3">
+            <p class="text-sm font-semibold text-gray-900">Add Transaction</p>
+            <p class="text-xs text-gray-500">Record income or expense</p>
+        </div>
+    </a>
+    <a href="/budgets" class="flex items-center p-4 bg-white rounded-xl shadow-sm border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all group">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-accent-100 flex items-center justify-center group-hover:bg-accent-200 transition-colors">
+            <svg class="w-5 h-5 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+        </div>
+        <div class="ml-3">
+            <p class="text-sm font-semibold text-gray-900">Manage Budgets</p>
+            <p class="text-xs text-gray-500">Set and track spending limits</p>
+        </div>
+    </a>
+    <a href="/goals" class="flex items-center p-4 bg-white rounded-xl shadow-sm border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all group">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
+            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+        </div>
+        <div class="ml-3">
+            <p class="text-sm font-semibold text-gray-900">Financial Goals</p>
+            <p class="text-xs text-gray-500">Track your savings goals</p>
+        </div>
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/app.js"></script>
+{% endblock %}

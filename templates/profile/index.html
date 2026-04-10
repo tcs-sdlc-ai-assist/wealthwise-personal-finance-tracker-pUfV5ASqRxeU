@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — WealthWise Finance Tracker{% endblock %}
+
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Profile Information -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Profile Information</h2>
+            <p class="mt-1 text-sm text-gray-500">Update your account details and personal information.</p>
+        </div>
+        <div class="px-6 py-6">
+            <form method="POST" action="/profile/update" class="space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                        <input type="text" id="username" name="username" value="{{ user.username if user else '' }}" required minlength="3" maxlength="50"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                               placeholder="Enter your username">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="email" name="email" value="{{ user.email if user else '' }}" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                               placeholder="Enter your email">
+                    </div>
+                </div>
+                <div>
+                    <label for="full_name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input type="text" id="full_name" name="full_name" value="{{ user.full_name if user and user.full_name else '' }}" maxlength="100"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                           placeholder="Enter your full name (optional)">
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Change Password</h2>
+            <p class="mt-1 text-sm text-gray-500">Ensure your account stays secure by using a strong password.</p>
+        </div>
+        <div class="px-6 py-6">
+            <form method="POST" action="/profile/change-password" class="space-y-5">
+                <div>
+                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                           placeholder="Enter your current password">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label for="new_password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                        <input type="password" id="new_password" name="new_password" required minlength="8"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                               placeholder="Enter new password">
+                        <p class="mt-1 text-xs text-gray-400">Min 8 characters, with uppercase, lowercase, and a digit.</p>
+                    </div>
+                    <div>
+                        <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required minlength="8"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                               placeholder="Confirm new password">
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Update Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Account Statistics -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Account Statistics</h2>
+            <p class="mt-1 text-sm text-gray-500">An overview of your account activity.</p>
+        </div>
+        <div class="px-6 py-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <!-- Member Since -->
+                <div class="flex items-center p-4 bg-primary-50 rounded-lg">
+                    <div class="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-xs font-medium text-primary-600 uppercase tracking-wide">Member Since</p>
+                        <p class="mt-1 text-lg font-semibold text-gray-900">{{ member_since if member_since else 'N/A' }}</p>
+                    </div>
+                </div>
+
+                <!-- Total Transactions -->
+                <div class="flex items-center p-4 bg-accent-50 rounded-lg">
+                    <div class="flex-shrink-0 w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-xs font-medium text-accent-600 uppercase tracking-wide">Total Transactions</p>
+                        <p class="mt-1 text-lg font-semibold text-gray-900">{{ total_transactions if total_transactions is defined else 0 }}</p>
+                    </div>
+                </div>
+
+                <!-- Total Categories -->
+                <div class="flex items-center p-4 bg-purple-50 rounded-lg">
+                    <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-xs font-medium text-purple-600 uppercase tracking-wide">Total Categories</p>
+                        <p class="mt-1 text-lg font-semibold text-gray-900">{{ total_categories if total_categories is defined else 0 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Actions -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Account Actions</h2>
+        </div>
+        <div class="px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <p class="text-sm text-gray-700">Sign out of your account on this device.</p>
+                <p class="text-xs text-gray-400 mt-1">You will need to log in again to access your data.</p>
+            </div>
+            <form method="POST" action="/auth/logout">
+                <button type="submit"
+                        class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Sign Out
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Categories — WealthWise Finance Tracker{% endblock %}
+
+{% block nav_admin_categories %}bg-primary-50 text-primary-700 font-semibold{% endblock %}
+
+{% block page_title %}Categories{% endblock %}
+
+{% block header_actions %}
+<button onclick="document.getElementById('add-category-modal').classList.remove('hidden')" class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors">
+    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Add Category
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- System Categories Section -->
+<div class="mb-8">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">System Categories</h2>
+    <p class="text-sm text-gray-500 mb-4">Default categories provided by the system. These cannot be edited or deleted.</p>
+    {% if system_categories and system_categories|length > 0 %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {% for category in system_categories %}
+        <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+            <div class="flex items-center space-x-3">
+                <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: {{ category.color or '#6B7280' }}20;">
+                    {% if category.icon %}
+                    <span class="text-lg" style="color: {{ category.color or '#6B7280' }};">{{ category.icon }}</span>
+                    {% else %}
+                    <svg class="w-5 h-5" style="color: {{ category.color or '#6B7280' }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    {% endif %}
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ category.name }}</p>
+                    {% if category.description %}
+                    <p class="text-xs text-gray-500 truncate">{{ category.description }}</p>
+                    {% endif %}
+                </div>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                    System
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white border border-gray-200 rounded-lg p-6 text-center">
+        <p class="text-sm text-gray-500">No system categories available.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Custom Categories Section -->
+<div>
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Custom Categories</h2>
+    <p class="text-sm text-gray-500 mb-4">Your custom categories. You can edit or delete these as needed.</p>
+    {% if custom_categories and custom_categories|length > 0 %}
+    <div class="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Description</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Color</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Status</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Transactions</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for category in custom_categories %}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: {{ category.color or '#6B7280' }}20;">
+                                {% if category.icon %}
+                                <span class="text-sm" style="color: {{ category.color or '#6B7280' }};">{{ category.icon }}</span>
+                                {% else %}
+                                <svg class="w-4 h-4" style="color: {{ category.color or '#6B7280' }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                </svg>
+                                {% endif %}
+                            </div>
+                            <span class="text-sm font-medium text-gray-900">{{ category.name }}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                        <span class="text-sm text-gray-500">{{ category.description or '—' }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        {% if category.color %}
+                        <div class="flex items-center space-x-2">
+                            <span class="inline-block w-4 h-4 rounded-full border border-gray-200" style="background-color: {{ category.color }};"></span>
+                            <span class="text-xs text-gray-500 font-mono">{{ category.color }}</span>
+                        </div>
+                        {% else %}
+                        <span class="text-sm text-gray-400">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        {% if category.is_active %}
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+                        {% else %}
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <span class="text-sm text-gray-500">{{ category.transaction_count or 0 }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                        <div class="flex items-center justify-end space-x-2">
+                            <a href="/categories/{{ category.id }}/edit" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-primary-700 bg-primary-50 rounded-md hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors">
+                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                Edit
+                            </a>
+                            <form method="POST" action="/categories/{{ category.id }}/delete" data-confirm-submit="Are you sure you want to delete this category? This action cannot be undone.">
+                                <button type="submit" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-red-700 bg-red-50 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <svg class="mx-auto w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+        </svg>
+        <h3 class="text-sm font-medium text-gray-900 mb-1">No custom categories yet</h3>
+        <p class="text-sm text-gray-500 mb-4">Create your first custom category to organize your transactions.</p>
+        <button onclick="document.getElementById('add-category-modal').classList.remove('hidden')" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors">
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Category
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Category Modal -->
+<div id="add-category-modal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="document.getElementById('add-category-modal').classList.add('hidden')"></div>
+
+        <!-- Spacer for centering -->
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal panel -->
+        <div class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <form method="POST" action="/categories">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Add New Category</h3>
+                        <p class="mt-1 text-sm text-gray-500">Create a custom category to organize your transactions.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Name -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="name" id="name" required minlength="1" maxlength="100" placeholder="e.g., Groceries, Utilities" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea name="description" id="description" rows="2" maxlength="500" placeholder="Optional description for this category" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"></textarea>
+                        </div>
+
+                        <!-- Color and Icon Row -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Color -->
+                            <div>
+                                <label for="color" class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="color" name="color" id="color" value="#3B82F6" class="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5">
+                                    <input type="text" id="color-text" value="#3B82F6" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$" placeholder="#3B82F6" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                                </div>
+                            </div>
+
+                            <!-- Icon -->
+                            <div>
+                                <label for="icon" class="block text-sm font-medium text-gray-700 mb-1">Icon</label>
+                                <input type="text" name="icon" id="icon" maxlength="50" placeholder="e.g., 🛒, 💡, 🏠" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                                <p class="mt-1 text-xs text-gray-400">Use an emoji or icon identifier</p>
+                            </div>
+                        </div>
+
+                        <!-- Active Status -->
+                        <div class="flex items-center">
+                            <input type="checkbox" name="is_active" id="is_active" value="true" checked class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                            <label for="is_active" class="ml-2 text-sm text-gray-700">Active</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse sm:space-x-2 sm:space-x-reverse">
+                    <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Create Category
+                    </button>
+                    <button type="button" onclick="document.getElementById('add-category-modal').classList.add('hidden')" class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var colorPicker = document.getElementById('color');
+        var colorText = document.getElementById('color-text');
+
+        if (colorPicker && colorText) {
+            colorPicker.addEventListener('input', function() {
+                colorText.value = this.value.toUpperCase();
+            });
+
+            colorText.addEventListener('input', function() {
+                var val = this.value.trim();
+                if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+                    colorPicker.value = val;
+                }
+            });
+
+            colorText.addEventListener('change', function() {
+                var val = this.value.trim();
+                if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+                    colorPicker.value = val;
+                    this.value = val.toUpperCase();
+                } else {
+                    this.value = colorPicker.value.toUpperCase();
+                }
+            });
+        }
+
+        // Sync color-text value to the hidden color input on form submit
+        var form = document.querySelector('#add-category-modal form');
+        if (form && colorText && colorPicker) {
+            form.addEventListener('submit', function() {
+                colorPicker.value = colorText.value || colorPicker.value;
+            });
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var modal = document.getElementById('add-category-modal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
